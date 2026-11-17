@@ -18,16 +18,31 @@ if (header) {
 const menuButton = $(".menu");
 const navigation = $("#nav");
 if (menuButton && navigation) {
+    const closeMenu = () => {
+        navigation.classList.remove("open");
+        menuButton.setAttribute("aria-expanded", "false");
+    };
+
     menuButton.addEventListener("click", () => {
         const isOpen = navigation.classList.toggle("open");
         menuButton.setAttribute("aria-expanded", String(isOpen));
     });
 
-    $$("nav a").forEach((link) => {
-        link.addEventListener("click", () => {
-            navigation.classList.remove("open");
-            menuButton.setAttribute("aria-expanded", "false");
-        });
+    $$("nav a", navigation).forEach((link) => {
+        link.addEventListener("click", closeMenu);
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!navigation.classList.contains("open") || navigation.contains(event.target) || menuButton.contains(event.target)) return;
+        closeMenu();
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeMenu();
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 900) closeMenu();
     });
 }
 
